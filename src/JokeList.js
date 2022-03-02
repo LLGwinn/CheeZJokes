@@ -56,18 +56,24 @@ class JokeList extends React.Component {
   }
 
   componentDidMount() {
-    const {jokes} = this.state;
-    if (jokes.length === 0) this.generateNewJokes();
+    const startingJokes = JSON.parse(localStorage.getItem('savedJokes'));
+
+    if (startingJokes) {
+      this.setState({jokes:startingJokes});
+    } else {
+      const {jokes} = this.state;
+      if (jokes.length === 0) this.generateNewJokes();
+    }
   }
 
   /* render: either loading spinner or list of sorted jokes. */
 
   render() {
     const {jokes} = this.state;
-    //<i className='fas fa-spinner fa-spin' />
 
     if (jokes.length > 0) {
       let sortedJokes = [...jokes].sort((a, b) => b.votes - a.votes);
+      localStorage.setItem('savedJokes', JSON.stringify(sortedJokes));
 
       return (
         <div className="JokeList">
@@ -89,36 +95,6 @@ class JokeList extends React.Component {
     
   }
 }
-
-  // useEffect(function() {
-  //   async function getJokes() {
-  //     let j = [...jokes];
-  //     let seenJokes = new Set();
-  //     try {
-  //       while (j.length < numJokesToGet) {
-  //         let res = await axios.get("https://icanhazdadjoke.com", {
-  //           headers: { Accept: "application/json" }
-  //         });
-  //         let { status, ...jokeObj } = res.data;
-  
-  //         if (!seenJokes.has(jokeObj.id)) {
-  //           seenJokes.add(jokeObj.id);
-  //           j.push({ ...jokeObj, votes: 0 });
-  //         } else {
-  //           console.error("duplicate found!");
-  //         }
-  //       }
-  //       this.setState({jokes:j});
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   }
-
-  //   if (jokes.length === 0) getJokes();
-  // }, [jokes, numJokesToGet]);
-
-
-
 export default JokeList;
 
 // function JokeList({ numJokesToGet = 10 }) {
